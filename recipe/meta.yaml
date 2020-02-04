@@ -10,7 +10,9 @@ source:
   sha256: 48edf8b61f0966d4c08a341040027ee8f4f586aad25ae26617727e4687cbb5cd
 
 build:
-  number: 0
+  number: 1
+  entrypoints:
+    - seabreeze_os_setup = seabreeze.os_setup:main
 
 requirements:
   build:
