@@ -47,6 +47,8 @@ test:
     - mock
   source_files:
     - tests
+  commands:
+    - CI=true pytest -v tests/
 
 about:
   home: http://github.com/ap--/python-seabreeze
