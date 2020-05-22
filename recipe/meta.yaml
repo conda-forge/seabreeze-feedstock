@@ -8,6 +8,8 @@ package:
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: 87e1a93cb582fb2cbe78ce94a578de1d8ca5e93cde080ca37bb1560b3e3a05e6
+  patches:
+      - 0001-ci-fix-pytest-on-conda-ci.patch
 
 build:
   number: 0
@@ -48,7 +50,7 @@ test:
   source_files:
     - tests
   commands:
-    - CI=true pytest -v tests/
+    - pytest -v tests/
 
 about:
   home: http://github.com/ap--/python-seabreeze

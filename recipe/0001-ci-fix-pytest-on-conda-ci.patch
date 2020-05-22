@@ -1,0 +1,142 @@
+From ad40b281bc1f65daf958235857ddcd6085724b65 Mon Sep 17 00:00:00 2001
+From: ap-- <andreas@poehlmann.io>
+Date: Fri, 22 May 2020 17:17:55 +0200
+Subject: [PATCH] [ci] fix pytest on conda ci
+
+---
+ tests/conftest.py           | 23 +++++++-----
+ tests/test_spectrometers.py | 71 ++++++++++++++++++++++---------------
+ 2 files changed, 58 insertions(+), 36 deletions(-)
+
+diff --git a/tests/conftest.py b/tests/conftest.py
+index 95b6305..de1923e 100644
+--- a/tests/conftest.py
++++ b/tests/conftest.py
+@@ -1,21 +1,28 @@
+-import os
+-from distutils.util import strtobool
+-
+ import mock
+ import pytest
+ 
+-# Fix for running pyseabreeze tests on CIs
+-RUNNING_ON_CI = strtobool(os.environ.get("CI", "0")) == 1
++
++def _running_on_ci():
++    """returns if we're currently running on a CI"""
++    import os
++
++    CI = os.environ.get("CI", "").lower()
++    CONDA_BUILD = os.environ.get("CONDA_BUILD", "").lower()
++    if CONDA_BUILD in {"1", "true"}:
++        return True
++    if CI in {"1", "true", "azure", "travis", "appveyor", "circleci"}:
++        return True
++    return False
+ 
+ 
+-@pytest.fixture(scope="session", autouse=RUNNING_ON_CI)
++@pytest.fixture(scope="session", autouse=_running_on_ci())
+ def mock_pyusb_backend_libusb0():
+-    """mock usb.backend.libusb0
++    """mock usb.core.find
+ 
+     when running on a ci, the libusb0 backend of pyusb can crash if access
+     to the usbfs is denied: https://github.com/pyusb/pyusb/issues/151
+ 
+     this fixture is automatically loaded when the CI env var is set.
+     """
+-    with mock.patch("usb.backend.libusb0.get_backend"):
++    with mock.patch("usb.core.find", return_value=[]):
+         yield
+diff --git a/tests/test_spectrometers.py b/tests/test_spectrometers.py
+index 1c2888f..0bd99b0 100644
+--- a/tests/test_spectrometers.py
++++ b/tests/test_spectrometers.py
+@@ -1,5 +1,19 @@
+ import pytest
+ 
++
++def _running_on_ci():
++    """returns if we're currently running on a CI"""
++    import os
++
++    CI = os.environ.get("CI", "").lower()
++    CONDA_BUILD = os.environ.get("CONDA_BUILD", "").lower()
++    if CONDA_BUILD in {"1", "true"}:
++        return True
++    if CI in {"1", "true", "azure", "travis", "appveyor", "circleci"}:
++        return True
++    return False
++
++
+ try:
+     import seabreeze.pyseabreeze as psb
+ except ImportError:
+@@ -24,34 +38,35 @@ else:
+ def _retr():
+     """retrieves a list of all connected spectrometers for all backends"""
+     params, ids = [], []
+-    csb_serials, psb_serials = set(), set()
+-    for serials, backend in [(csb_serials, csb), (psb_serials, psb)]:
+-        if backend is None:
+-            continue
+-        api = backend.SeaBreezeAPI()
+-        try:
+-            serials.update((d.serial_number, d.model) for d in api.list_devices())
+-        except:
+-            pass
+-        finally:
+-            api.shutdown()
+-    for ser_mod in csb_serials.union(psb_serials):
+-        params.extend(
+-            [
+-                (csb, ser_mod[0])
+-                if ser_mod in csb_serials
+-                else pytest.param((csb, None), marks=pytest.mark.skip),
+-                (psb, ser_mod[0])
+-                if ser_mod in psb_serials
+-                else pytest.param((psb, None), marks=pytest.mark.skip),
+-            ]
+-        )
+-        ids.extend(
+-            [
+-                ("cseabreeze:{}:{}".format(ser_mod[1], ser_mod[0])),
+-                ("pyseabreeze:{}:{}".format(ser_mod[1], ser_mod[0])),
+-            ]
+-        )
++    if not _running_on_ci():
++        csb_serials, psb_serials = set(), set()
++        for serials, backend in [(csb_serials, csb), (psb_serials, psb)]:
++            if backend is None:
++                continue
++            api = backend.SeaBreezeAPI()
++            try:
++                serials.update((d.serial_number, d.model) for d in api.list_devices())
++            except:
++                pass
++            finally:
++                api.shutdown()
++        for ser_mod in csb_serials.union(psb_serials):
++            params.extend(
++                [
++                    (csb, ser_mod[0])
++                    if ser_mod in csb_serials
++                    else pytest.param((csb, None), marks=pytest.mark.skip),
++                    (psb, ser_mod[0])
++                    if ser_mod in psb_serials
++                    else pytest.param((psb, None), marks=pytest.mark.skip),
++                ]
++            )
++            ids.extend(
++                [
++                    ("cseabreeze:{}:{}".format(ser_mod[1], ser_mod[0])),
++                    ("pyseabreeze:{}:{}".format(ser_mod[1], ser_mod[0])),
++                ]
++            )
+     if not params:
+         params = [
+             pytest.param((csb, None), marks=pytest.mark.skip),
+-- 
+2.25.1
+
