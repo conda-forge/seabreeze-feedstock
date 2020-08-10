@@ -8,11 +8,10 @@ package:
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: d67fd8a91dcccd71ded2f9eee7eed286ba24c64bd3db94c96aac947962561de1
-  patches:
-    - 0001-ci-fix-pytest-on-conda-ci.patch
 
 build:
   number: 0
+  script: "{{ PYTHON }} -m pip install . -vv"
   entry_points:
     - seabreeze_os_setup = seabreeze.os_setup:main
 
@@ -37,7 +36,6 @@ requirements:
     - numpy
     - pyusb
     - future
-    - enum34  # [py<34]
 
 test:
   imports:
@@ -45,7 +43,7 @@ test:
     - seabreeze.cseabreeze
     - seabreeze.pyseabreeze
   requires:
-    - pytest <5
+    - pytest
     - mock
   source_files:
     - tests
