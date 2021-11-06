@@ -10,7 +10,7 @@ source:
   sha256: cb4271acf52d379ff8be333a7efe50ea8b4171c4931eee30afe9570f844c8c4c
 
 build:
-  number: 1
+  number: 2
   script: {{ PYTHON }} -m pip install . -vv
   entry_points:
     - seabreeze_os_setup = seabreeze.os_setup:main
