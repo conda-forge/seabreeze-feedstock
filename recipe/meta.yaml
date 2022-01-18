@@ -35,11 +35,12 @@ requirements:
     - libusb-compat  # [linux]
     - numpy
     - pyusb
-    - future
+    - typing_extensions  # [py<38]
 
 test:
   imports:
     - seabreeze
+    - seabreeze.types
     - seabreeze.cseabreeze
     - seabreeze.pyseabreeze
   requires:
@@ -51,7 +52,7 @@ test:
     - pytest -v tests/
 
 about:
-  home: http://github.com/ap--/python-seabreeze
+  home: https://github.com/ap--/python-seabreeze
   license: MIT
   license_family: MIT
   license_file: LICENSE.md
