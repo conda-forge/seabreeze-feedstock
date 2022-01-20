@@ -1,7 +1,7 @@
 About seabreeze
 ===============
 
-Home: http://github.com/ap--/python-seabreeze
+Home: https://github.com/ap--/python-seabreeze
 
 Package license: MIT
 
