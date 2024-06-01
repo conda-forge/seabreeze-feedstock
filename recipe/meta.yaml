@@ -1,5 +1,5 @@
 {% set name = "seabreeze" %}
-{% set version = "2.7.0" %}
+{% set version = "2.8.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 7785199e247e9a1a6ae739f62f14baef039a5f1c098ee5e6e5679817d8956354
+  sha256: 71bca2c9311de3eab89e26fe6684e82d7f93956004e5cb5387749c9a4f513164
 
 build:
   number: 0
@@ -21,6 +21,7 @@ requirements:
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
     - cython                                 # [build_platform != target_platform]
     - {{ compiler('c') }}
+    - {{ stdlib("c") }}
     - {{ compiler('cxx') }}
     - pkg-config  # [not win]
   host:
