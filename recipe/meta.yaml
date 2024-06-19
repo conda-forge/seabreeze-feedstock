@@ -1,5 +1,5 @@
 {% set name = "seabreeze" %}
-{% set version = "2.9.1" %}
+{% set version = "2.9.2" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 65cf9fa06e249b076cacd3bda34de271442261e99b13905164cc60e0afed7e7d
+  sha256: 5f78fefb7883893642f66eba9857dcc0a270b553d6c458988f4464ad27f28096
 
 build:
   number: 0
