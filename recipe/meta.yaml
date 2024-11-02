@@ -1,5 +1,5 @@
 {% set name = "seabreeze" %}
-{% set version = "2.9.2" %}
+{% set version = "2.10.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,10 +7,10 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 5f78fefb7883893642f66eba9857dcc0a270b553d6c458988f4464ad27f28096
+  sha256: dc2eb5a20b29644f41799c8ba7342f11ac02673d519533edf343647df2c44464
 
 build:
-  number: 1
+  number: 0
   script: {{ PYTHON }} -m pip install . -vv
   entry_points:
     - seabreeze_os_setup = seabreeze.os_setup:main
